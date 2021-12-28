@@ -1,16 +1,31 @@
 const issueContainerEl = document.querySelector("#issues-container");
+var limitWarningEl = document.querySelector("#limit-warning");
+
+
 let getRepoIssues = function(repo){
     let apiUrl = "https://api.github.com/repos/" + repo + "/issues?direction=asc";
     fetch(apiUrl).then(function(response){
         if(response.ok){
             response.json().then(function(data){
                 displayIssues(data);
+                if (response.headers.get("Link")) {
+                    displayWarning(repo)
+                }
             })
         } else {
             alert("there was a problem with your request")
         }
     })
 };
+
+var displayWarning= function(repo){
+    limitWarningEl.textContent="To see more than 30 issues visit ";
+    var linkEl = document.createElement("a");
+    linkEl.textContent = "see more issues on github";
+    linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+    linkEl.setAttribute("target", "_blank")
+    limitWarningEl.appendChild(linkEl)
+}
 
 let displayIssues = function(issues){
     if (issues.length === 0) {
@@ -41,4 +56,4 @@ let displayIssues = function(issues){
 }
 
 
-getRepoIssues("aneslin/git-it-done")
+getRepoIssues("facebook/react")
